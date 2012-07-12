@@ -20,7 +20,7 @@ except IOError:
     README = ''
 
 setup(
-    name='userprofile',
+    name='tgapp-userprofile',
     version='0.1',
     description='',
     long_description=README,

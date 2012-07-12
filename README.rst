@@ -19,7 +19,7 @@ In your application *config/app_cfg.py* import **plug**::
 
     from tgext.pluggable import plug
 
-Then at the *end of the file* call plug with registration::
+Then at the *end of the file* call plug with userprofile::
 
     plug(base_config, 'userprofile')
 
