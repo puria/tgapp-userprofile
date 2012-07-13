@@ -23,11 +23,12 @@ except IOError:
 setup(
     name='tgapp-userprofile',
     version='0.0.1',
-    description='',
+    description='''Pluggable application for TurboGears2 which provides a basic user profile page with
+forms to allow users to edit their own profile or change their password''',
     long_description=README,
-    author='',
-    author_email='',
-    #url='',
+    author='Mirko Darino, Alessandro Molina',
+    author_email='mirko.darino@axant.it, alessandro.molina@axant.it',
+    url='https://bitbucket.org/_amol_/tgapp-userprofile',
     keywords='turbogears2.application',
     setup_requires=["PasteScript >= 1.7"],
     paster_plugins=[],
