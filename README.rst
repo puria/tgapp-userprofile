@@ -9,7 +9,7 @@ Installing
 
 userprofile can be installed both from pypi or from bitbucket::
 
-    easy_install userprofile
+    easy_install tgapp-userprofile
 
 should just work for most of the users
 
