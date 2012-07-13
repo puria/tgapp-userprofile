@@ -64,6 +64,8 @@ the url of the avatar image of the user. If it is not available
 userprofile will look for a ``tgapp-fbauth`` facebook avatar or will
 falleback to the default avatar.
 
+``display_name`` key will be used as the profile page title.
+
 profile_form
 ~~~~~~~~~~~~~~~~~~~~~~~
 
