@@ -3,8 +3,10 @@
 from tg import url
 from tgext.pluggable import app_model, plug_url
 
-from tw.forms import ListForm, TextField
+from tw.forms import ListForm, TextField, PasswordField
 from tw.forms.validators import UnicodeString
+from sprox.formbase import FilteringSchema
+from formencode.validators import FieldsMatch
 
 def get_profile_css(config):
     return url(config['_pluggable_userprofile_config'].get('custom_css',
@@ -38,3 +40,22 @@ def create_user_form(user):
                                 action=plug_url('userprofile', '/save'))
     return profile_form
 
+class ChangePasswordForm(ListForm):
+    password = PasswordField(label_text='Password')
+    password_confirm = PasswordField(label_text='Confirm Password')
+
+_password_match = FieldsMatch('password', 'verify_password',
+                              messages={'invalidNoMatch': 'Passwords do not match'})
+if hasattr(TextField, 'req'):
+    change_password_form_validator = _password_match
+else:
+    change_password_form_validator =  FilteringSchema(chained_validators=[_password_match])
+
+def create_change_password_form():
+    return ListForm(fields=[PasswordField('password', label_text='Password',
+                                          validator=UnicodeString(not_empty=True)),
+                            PasswordField('verify_password', label_text='Confirm Password',
+                                          validator=UnicodeString(not_empty=True))],
+                    action=plug_url('userprofile', '/save_password', lazy=True),
+                    validator=change_password_form_validator,
+                    submit_text='Save')

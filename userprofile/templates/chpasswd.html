@@ -7,18 +7,16 @@
 <xi:include href="master.html" />
 
 <head>
-    <title>${user.display_name} Profile Edit</title>
+    <title>Change Password</title>
     <link rel="stylesheet" type="text/css" media="screen" href="${profile_css}" />
 </head>
 
 <body>
+    <h3>Change Password</h3>
     <div id="userprofile_container">
-        <div id="userprofile_avatar_container">
-            <img id="userprofile_avatar" src="${user_avatar}" />
-        </div>
         <div id="userprofile_edit_form">
             <h3>Edit Profile</h3>
-            ${form.display(user)}
+            ${form.display()}
         </div>
     </div>
 </body>

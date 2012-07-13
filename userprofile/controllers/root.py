@@ -4,24 +4,25 @@
 from tg import TGController
 from tg import expose, flash, require, url, lurl, request, redirect, validate, config
 from tg.i18n import ugettext as _, lazy_ugettext as l_
-from tg.exceptions import HTTPNotFound
 
 try:
     from repoze.what import predicates
 except ImportError:
     from tg import predicates
 
-from userprofile.model import DBSession
-from userprofile.lib import create_user_form, get_user_data, get_profile_css, update_user_data
+from userprofile.lib import create_user_form, get_user_data, get_profile_css, \
+                            update_user_data, create_change_password_form
 from tgext.pluggable import app_model, plug_url, primary_key
+from tgext.datahelpers.validators import SQLAEntityConverter
+from tgext.datahelpers.utils import fail_with
+
+edit_password_form = create_change_password_form()
 
 class RootController(TGController):
     @expose('userprofile.templates.index')
-    def default(self, uid):
-        user = DBSession.query(app_model.User).filter(primary_key(app_model.User)==uid).first()
-        if not user:
-            raise HTTPNotFound()
-
+    @validate({'user':SQLAEntityConverter(app_model.User)},
+              error_handler=fail_with(404))
+    def _default(self, user):
         user_data, user_avatar = get_user_data(user)
         user_displayname = user_data.pop('display_name', (None, 'Unknown'))
         user_partial = config['_pluggable_userprofile_config'].get('user_partial')
@@ -50,4 +51,20 @@ class RootController(TGController):
         if not profile_save:
             profile_save = update_user_data
         profile_save(user, kw)
+        flash(_('Profile successfully updated'))
+        return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))
+
+    @expose('userprofile.templates.chpasswd')
+    @require(predicates.not_anonymous())
+    def chpasswd(self, **kw):
+        user = request.identity['user']
+        return dict(user=user, profile_css=get_profile_css(config),
+                    form=edit_password_form)
+
+    @expose()
+    @validate(edit_password_form, error_handler=chpasswd)
+    def save_password(self, password, verify_password):
+        user = request.identity['user']
+        user.password = password
+        flash(_('Password successfully changed'))
         return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))

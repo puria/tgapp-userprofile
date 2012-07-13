@@ -20,7 +20,8 @@
             <div id="userprofile_title">
                 ${user_displayname[1]}
                 <div id="userprofile_edit" py:if="is_my_own_profile">
-                    <a href="${h.plug_url('userprofile', '/edit')}">edit</a>
+                    <a href="${h.plug_url('userprofile', '/edit')}">edit</a> -
+                    <a href="${h.plug_url('userprofile', '/chpasswd')}">change password</a>
                 </div>
             </div>
             <div id="userprofile_other_attr">
