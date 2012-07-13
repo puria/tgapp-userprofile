@@ -18,6 +18,10 @@
     margin-bottom: 15px;
 }
 
+#userprofile_edit {
+    font-size: 13px;
+}
+
 .userprofile_user_attr_title {
     font-weight: bold;
     margin-right: 5px;
@@ -25,4 +29,20 @@
 
 #userprofile_end {
     clear: both;
+}
+
+#userprofile_edit_form input[type="text"] {
+    padding: 4px;
+    border: 1px solid #CCC;
+    min-width: 200px;
+}
+
+#userprofile_edit_form > form > ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+#userprofile_edit_form > form > ul > li {
+    margin-top: 5px;
 }
