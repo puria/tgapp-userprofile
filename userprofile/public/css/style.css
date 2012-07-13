@@ -1,22 +1,11 @@
-#userprofile_container {
-    width: 500px;
-    margin: 0 auto;
-    background-color: white;
-    border: solid 1px black;
-}
-
 #userprofile_avatar_container {
     border: solid 1px gray;
-    margin: 10px;
+    margin-right: 10px;
 }
 
 #userprofile_avatar_container img {
     width: 120px;
     display: block;
-}
-
-#userprofile_info_container {
-    margin-top: 10px;
 }
 
 #userprofile_avatar_container, #puserrofile_info_container {
@@ -26,7 +15,6 @@
 #userprofile_title {
     font-weight: bolder;
     font-size: 20px;
-    color: blue;
     margin-bottom: 15px;
 }
 
