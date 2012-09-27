@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Main Controller"""
+from pylons.controllers.util import abort
 
 from tg import TGController
 from tg import expose, flash, require, url, lurl, request, redirect, validate, config
@@ -60,11 +61,18 @@ class RootController(TGController):
         user = request.identity['user']
         return dict(user=user, profile_css=get_profile_css(config),
                     form=edit_password_form)
-
     @expose()
     @validate(edit_password_form, error_handler=chpasswd)
     def save_password(self, password, verify_password):
         user = request.identity['user']
         user.password = password
         flash(_('Password successfully changed'))
+        return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))
+
+    @expose('userprofile.templates.index')
+    def me(self):
+        try:
+            user=request.identity['user']
+        except:
+            return abort(404)
         return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))

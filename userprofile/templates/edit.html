@@ -18,7 +18,7 @@
         </div>
         <div id="userprofile_edit_form">
             <h3>Edit Profile</h3>
-            ${form.display(user)}
+            ${form.display(user, action=h.plug_url('userprofile', '/save'))}
         </div>
     </div>
 </body>

@@ -15,7 +15,7 @@
     <div id="userprofile_container">
         <div id="userprofile_edit_form">
             <h3>Change Password</h3>
-            ${form.display()}
+            ${form.display(action=h.plug_url('userprofile', '/save_password', lazy=True))}
         </div>
     </div>
 </body>
