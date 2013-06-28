@@ -40,7 +40,6 @@ forms to allow users to edit their own profile or change their password''',
     entry_points="""
     """,
     dependency_links=[
-        "http://www.turbogears.org/2.1/downloads/current/"
         ],
     zip_safe=False
 )
