@@ -22,11 +22,10 @@ class RootController(TGController):
     @expose('userprofile.templates.index')
     @validate({'user':SQLAEntityConverter(app_model.User)},
               error_handler=fail_with(404))
-    def _default(self, user):
+    def _default(self, user, **kw):
         user_data, user_avatar = get_user_data(user)
         user_displayname = user_data.pop('display_name', (None, 'Unknown'))
         user_partial = config['_pluggable_userprofile_config'].get('user_partial')
-
         return dict(user=user, is_my_own_profile=request.identity and request.identity['user'] == user,
                     user_data=user_data, user_avatar=user_avatar,
                     user_displayname=user_displayname,
