@@ -12,15 +12,17 @@ except ImportError:
 
 from userprofile.lib import create_user_form, get_user_data, get_profile_css, \
                             update_user_data, create_change_password_form
+from userprofile.lib.validators import ModelEntityConverter
 from tgext.pluggable import app_model, plug_url, primary_key
-from tgext.datahelpers.validators import SQLAEntityConverter
 from tgext.datahelpers.utils import fail_with
+
 
 edit_password_form = create_change_password_form()
 
+
 class RootController(TGController):
     @expose('userprofile.templates.index')
-    @validate({'user':SQLAEntityConverter(app_model.User)},
+    @validate({'user': ModelEntityConverter('User')},
               error_handler=fail_with(404))
     def _default(self, user, **kw):
         user_data, user_avatar = get_user_data(user)
