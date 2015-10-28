@@ -1,12 +1,20 @@
 # -*- coding: utf-8 -*-
 from formencode import validators
+from hashlib import md5
 import tg
 from tg import url
 from tgext.pluggable import app_model, plug_url
 
+
 def get_profile_css(config):
     return url(config['_pluggable_userprofile_config'].get('custom_css',
         '/_pluggable/userprofile/css/style.css'))
+
+
+def _get_user_gravatar(email_address):
+    mhash = md5(email_address).hexdigest()
+    return url('http://www.gravatar.com/avatar/'+mhash, params=dict(s=32))
+
 
 def get_user_data(user):
     user_data = getattr(user, 'profile_data', {'display_name':('Display Name', user.display_name),
@@ -18,7 +26,7 @@ def get_user_data(user):
         if fbauth_info is not None:
             user_avatar = fbauth_info.profile_picture + '?type=large'
         else:
-            user_avatar = url('/_pluggable/userprofile/images/default_avatar.jpg')
+            user_avatar = _get_user_gravatar(user_data['email_address'][1])
 
     return user_data, user_avatar
 
