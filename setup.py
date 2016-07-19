@@ -9,7 +9,7 @@ except ImportError:
     from setuptools import setup, find_packages
 
 install_requires=[
-    "TurboGears2 >= 2.1.4",
+    "TurboGears2 >= 2.3.0",
     "tgext.pluggable",
     "tgext.datahelpers >= 0.0.5"
 ]
