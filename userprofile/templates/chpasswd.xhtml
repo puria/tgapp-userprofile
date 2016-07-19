@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html py:strip=""
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+<py:extends href="master.xhtml" />
+
+<head py:block="head" py:strip="True">
+    <title>Change Password</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="${profile_css}" />
+</head>
+
+<body py:block="body" py:strip="True">
+    <div id="userprofile_container">
+        <div id="userprofile_edit_form">
+            <h3>Change Password</h3>
+            ${form.display(action=h.plug_url('userprofile', '/save_password'))}
+        </div>
+    </div>
+</body>
+</html>

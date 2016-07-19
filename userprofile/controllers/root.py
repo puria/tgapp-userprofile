@@ -3,6 +3,7 @@
 
 from tg import TGController
 from tg import expose, flash, require, url, lurl, request, redirect, validate, config
+from tg.util import Bunch
 from tg.i18n import ugettext as _, lazy_ugettext as l_
 
 try:
@@ -39,7 +40,7 @@ class RootController(TGController):
     def edit(self):
         user = request.identity['user']
         user_data, user_avatar = get_user_data(user)
-        user_data = dict([(fieldid, info[1]) for fieldid, info in user_data.items()])
+        user_data = Bunch(((fieldid, info[1]) for fieldid, info in user_data.items()))
         return dict(user=user_data, profile_css=get_profile_css(config),
                     user_avatar=user_avatar,
                     form=create_user_form(user))
