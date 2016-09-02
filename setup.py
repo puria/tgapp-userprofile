@@ -22,7 +22,7 @@ except IOError:
 
 setup(
     name='tgapp-userprofile',
-    version='0.1.0',
+    version='0.1.1',
     description='''Pluggable application for TurboGears2 which provides a basic user profile page with
 forms to allow users to edit their own profile or change their password''',
     long_description=README,
