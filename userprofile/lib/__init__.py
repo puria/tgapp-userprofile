@@ -4,6 +4,7 @@ from hashlib import md5
 import tg
 from tg import url
 from tgext.pluggable import app_model, plug_url
+from tg.i18n import ugettext as _, lazy_ugettext as l_
 
 
 def get_profile_css(config):
@@ -17,8 +18,8 @@ def _get_user_gravatar(email_address):
 
 
 def get_user_data(user):
-    user_data = getattr(user, 'profile_data', {'display_name':('Display Name', user.display_name),
-                                               'email_address':('Email Address', user.email_address)})
+    user_data = getattr(user, 'profile_data', {'display_name': (l_('Display Name'), user.display_name),
+                                               'email_address': (l_('Email Address'), user.email_address)})
 
     user_avatar = user_data.pop('avatar', None)
     if user_avatar is None:
@@ -44,7 +45,7 @@ from sprox.formbase import FilteringSchema
 from formencode.validators import FieldsMatch
 
 _password_match = FieldsMatch('password', 'verify_password',
-                              messages={'invalidNoMatch': 'Passwords do not match'})
+                              messages={'invalidNoMatch': l_('Passwords do not match')})
 
 if hasattr(TextField, 'req'):
     change_password_form_validator = _password_match
@@ -56,7 +57,7 @@ if tg.config.get('prefer_toscawidgets2', False):
 
     class UserForm(ListForm):
         uid=HiddenField()
-        submit=SubmitButton(value='Save')
+        submit=SubmitButton(value=l_('Save'))
 
     def create_user_form(user):
         profile_form = getattr(user, 'profile_form', None)
@@ -73,8 +74,8 @@ if tg.config.get('prefer_toscawidgets2', False):
 
     class ChangePasswordForm(ListForm):
         password = PasswordField(label=u'Password', validator=Required)
-        verify_password = PasswordField(label=u'Confirm Password', validator=Required)
-        submit=SubmitButton(value='Save')
+        verify_password = PasswordField(label=l_(u'Confirm Password'), validator=Required)
+        submit=SubmitButton(value=l_('Save'))
         validator = change_password_form_validator
 
     def create_change_password_form():
@@ -86,15 +87,15 @@ else:
             user_data, user_avatar = get_user_data(user)
             form_fields = [TextField(id=name, validator=UnicodeString(not_empty=True),
                                      label_text=info[0]) for name, info in user_data.items()]
-            profile_form = ListForm(fields=form_fields, submit_text='Save',
+            profile_form = ListForm(fields=form_fields, submit_text=l_('Save'),
                                     action=plug_url('userprofile', '/save'))
         return profile_form
 
     def create_change_password_form():
         return ListForm(fields=[PasswordField('password', label_text='Password',
                                               validator=UnicodeString(not_empty=True)),
-                                PasswordField('verify_password', label_text='Confirm Password',
+                                PasswordField('verify_password', label_text=l_('Confirm Password'),
                                               validator=UnicodeString(not_empty=True))],
                         action=plug_url('userprofile', '/save_password', lazy=True),
                         validator=change_password_form_validator,
-                        submit_text='Save')
+                        submit_text=l_('Save'))

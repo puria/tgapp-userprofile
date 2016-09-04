@@ -37,6 +37,12 @@ forms to allow users to edit their own profile or change their password''',
     package_data={'tgapp.userprofile': ['i18n/*/LC_MESSAGES/*.mo',
                                  'templates/*/*',
                                  'public/*/*']},
+    message_extractors={'userprofile': [
+            ('**.py', 'python', None),
+            ('templates/**.xhtml', 'kajiki', None),
+            ('public/**', 'ignore', None)
+    ]},
+
     entry_points="""
     """,
     dependency_links=[
