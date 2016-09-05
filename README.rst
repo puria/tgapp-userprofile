@@ -82,3 +82,19 @@ form and is expected to update the user accordingly.
 By default values will be stored as they are into the user field
 with the same id provided into ``profile_data``.
 
+Bootstrap Layout
+---------------
+If you want use bootstrap for beautify style of `UserForm` or `ChangePasswordForm` form layout, in your app_cfg::
+
+    def replace_profile_form_layout():
+        from axf.bootstrap import BootstrapFormLayout
+        from userprofile.lib import UserForm
+        from userprofile.lib import ChangePasswordForm
+
+        UserForm.child = BootstrapFormLayout(children=UserForm.child.children)
+        UserForm.submit.css_class = 'btn-primary form-control'
+
+        ChangePasswordForm.child = BootstrapFormLayout(children=ChangePasswordForm.child.children)
+        ChangePasswordForm.submit.css_class = 'btn-primary form-control'
+
+    milestones.config_ready.register(replace_profile_form_layout)

@@ -24,7 +24,7 @@ def _get_storage_backend():
     elif tg_conf.get('use_ming', False):
         return 'ming'
     else:
-        raise ValueError('Turbopress should be used with sqlalchemy or ming')
+        raise ValueError('tgapp-userprofile should be used with sqlalchemy or ming')
 
 
 class ModelEntityConverter(FancyValidator):
