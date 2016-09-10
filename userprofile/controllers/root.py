@@ -22,10 +22,11 @@ edit_password_form = create_change_password_form()
 
 
 class RootController(TGController):
+    allow_only = predicates.not_anonymous()
+
     @expose('userprofile.templates.index')
-    @validate({'user': ModelEntityConverter('User')},
-              error_handler=fail_with(404))
-    def _default(self, user, **kw):
+    def _default(self, *args):
+        user = request.identity['user']
         user_data, user_avatar = get_user_data(user)
         user_displayname = user_data.pop('display_name', (None, 'Unknown'))
         user_partial = config['_pluggable_userprofile_config'].get('user_partial')
@@ -36,7 +37,6 @@ class RootController(TGController):
                     user_partial=user_partial)
 
     @expose('userprofile.templates.edit')
-    @require(predicates.not_anonymous())
     def edit(self):
         user = request.identity['user']
         user_data, user_avatar = get_user_data(user)
@@ -46,7 +46,6 @@ class RootController(TGController):
                     form=create_user_form(user))
 
     @expose()
-    @require(predicates.not_anonymous())
     def save(self, **kw):
         user = request.identity['user']
         profile_save = getattr(user, 'save_profile', None)
@@ -54,25 +53,17 @@ class RootController(TGController):
             profile_save = update_user_data
         profile_save(user, kw)
         flash(_('Profile successfully updated'))
-        return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))
+        return redirect(plug_url('userprofile', '/'))
 
     @expose('userprofile.templates.chpasswd')
-    @require(predicates.not_anonymous())
     def chpasswd(self, **kw):
         return dict(profile_css=get_profile_css(config),
                     form=edit_password_form)
 
-    @require(predicates.not_anonymous())
     @expose()
     @validate(edit_password_form, error_handler=chpasswd)
     def save_password(self, password, verify_password):
         user = request.identity['user']
         user.password = password
         flash(_('Password successfully changed'))
-        return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))
-
-    @require(predicates.not_anonymous())
-    @expose('userprofile.templates.index')
-    def me(self):
-        user=request.identity['user']
-        return redirect(plug_url('userprofile', '/%s' % getattr(user, primary_key(app_model.User).name)))
+        return redirect(plug_url('userprofile', '/'))

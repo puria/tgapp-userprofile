@@ -24,7 +24,7 @@ Then at the *end of the file* call plug with userprofile::
 
     plug(base_config, 'userprofile')
 
-You will be able to access the registration process at
+You will be able to access your profile at
 *http://localhost:8080/userprofile*.
 
 Options
@@ -42,7 +42,7 @@ User Properties
 
 ``tgapp-userprofile`` looks for various properties into the User class instances
 to drive its default behavior, the most important property is the ``profile_data``
-property which can provide a dictionary with the user informations to display
+property which can provide a dictionary with the user information to display
 on the profile page, but other properties are available to tune the behavior:
 
 profile_data
