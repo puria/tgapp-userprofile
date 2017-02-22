@@ -13,6 +13,8 @@ def get_profile_css(config):
 
 
 def _get_user_gravatar(email_address):
+    if not isinstance(email_address, bytes):
+        email_address = email_address.encode('utf-8')
     mhash = md5(email_address).hexdigest()
     return url('http://www.gravatar.com/avatar/'+mhash, params=dict(s=32))
 
