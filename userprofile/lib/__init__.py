@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from hashlib import md5
 import tg
-from tg import url
+from tg import url, request, config
 from tgext.pluggable import app_model, plug_url
 from tg.i18n import ugettext as _, lazy_ugettext as l_
 
@@ -9,6 +9,24 @@ from tw2.core import Required
 from tw2.forms import ListForm, TextField, TextArea, HiddenField,\
     FileField, SubmitButton, PasswordField
 from formencode.validators import FieldsMatch
+
+from tgext.mailer import Message as message
+from tgext.mailer import get_mailer
+
+
+def send_email(to_addr, sender, subject, body, rich=None):
+    mailer = get_mailer(request)
+    message_to_send = message(
+        subject=subject,
+        sender=sender,
+        recipients=[to_addr],
+        body=body,
+        html=rich or None,
+    )
+    if config.get('tm.enabled', False):
+        mailer.send(message_to_send)
+    else:
+        mailer.send_immediately(message_to_send)
 
 
 def get_profile_css(config):
@@ -44,7 +62,7 @@ def update_user_data(user, user_data):
 
 
 class UserForm(ListForm):
-    uid = HiddenField()
+    nothing = HiddenField()  # just to create children
     submit = SubmitButton(value=l_('Save'))
 
 
@@ -56,19 +74,14 @@ def create_user_form(user):
 
         for name, info in user_data.items():
             profile_form.child = profile_form.child()
-            profile_form.child.children.append(TextField(id=name, validator=Required, label=info[0]))
+            profile_form.child.children.append(
+                TextField(id=name, validator=Required, label=info[0]))
+
+        profile_form.child.children.append(
+            PasswordField(id='password', label=u'New Password'))
+        profile_form.child.children.append(
+            PasswordField(id='verify_password', label=l_(u'Confirm New Password')))
+        profile_form.child.validator = FieldsMatch('password', 'verify_password')
 
         profile_form = profile_form()
     return profile_form
-
-
-class ChangePasswordForm(ListForm):
-    password = PasswordField(label=u'Password', validator=Required)
-    verify_password = PasswordField(label=l_(u'Confirm Password'), validator=Required)
-    submit = SubmitButton(value=l_('Save'))
-    validator = FieldsMatch('password', 'verify_password',
-                            messages={'invalidNoMatch': l_('Passwords do not match')})
-
-
-def create_change_password_form():
-    return ChangePasswordForm()
