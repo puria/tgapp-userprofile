@@ -42,10 +42,13 @@ def _get_user_gravatar(email_address):
 
 
 def get_user_data(user):
-    user_data = getattr(user, 'profile_data', {'display_name': (l_('Display Name'), user.display_name),
-                                               'email_address': (l_('Email Address'), user.email_address)})
+    user_data = getattr(user, 'profile_data', {
+        'display_name': (l_('Display Name'), user.display_name),
+        'email_address': (l_('Email Address'), user.email_address),
+    })
 
-    user_avatar = user_data.pop('avatar', None)
+    user_avatar = user_data.pop('avatar', [None, None])[1]
+
     if user_avatar is None:
         fbauth_info = getattr(user, 'fbauth', None)
         if fbauth_info is not None:
@@ -61,6 +64,25 @@ def update_user_data(user, user_data):
         setattr(user, k, v)
 
 
+class ImageField(FileField):
+    inline_engine_name = 'kajiki'
+    template = '''
+    <div py:strip="True">
+        <label for="${w.attrs['id']}">
+            <img src="${w.initial_src}" id="${w.attrs['id']}:image" class="userprofile_filefield"/>
+        </label>
+        <input style="display: none;" py:attrs="w.attrs"
+               onchange="filefieldPreview(event, '${w.attrs['id']}:image')" accept="image/*"/>
+        <script>
+            function filefieldPreview(event, id) {
+                var output = document.getElementById(id);
+                output.src = URL.createObjectURL(event.target.files[0]);
+            }
+        </script>
+    </div>
+    '''
+
+
 class UserForm(ListForm):
     nothing = HiddenField()  # just to create children
     submit = SubmitButton(value=l_('Save'))
@@ -71,9 +93,12 @@ def create_user_form(user):
     if not profile_form:
         user_data, user_avatar = get_user_data(user)
         profile_form = UserForm()
+        profile_form.child = profile_form.child()
+
+        profile_form.child.children.append(
+            ImageField(id='avatar', name="avatar", initial_src=user_avatar))
 
         for name, info in user_data.items():
-            profile_form.child = profile_form.child()
             profile_form.child.children.append(
                 TextField(id=name, validator=Required, label=info[0]))
 
