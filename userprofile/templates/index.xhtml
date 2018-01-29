@@ -13,8 +13,7 @@
         <div id="userprofile_info_container">
             <div id="userprofile_title">
                 ${user_displayname[1]}
-                <a href="${h.plug_url('userprofile', '/edit')}">edit</a> -
-                <a href="${h.plug_url('userprofile', '/chpasswd')}">change password</a>
+                <a href="${h.plug_url('userprofile', '/edit')}">edit</a>
             </div>
             <div id="userprofile_other_attr">
                 <div py:for="attr_name, attr_value in user_data.items()"
