@@ -5,10 +5,9 @@ from tg import url, request, config
 from tgext.pluggable import app_model, plug_url
 from tg.i18n import ugettext as _, lazy_ugettext as l_
 
-from tw2.core import Required
+from tw2.core import Required, MatchValidator
 from tw2.forms import ListForm, TextField, TextArea, HiddenField,\
-    FileField, SubmitButton, PasswordField
-from formencode.validators import FieldsMatch
+    FileField, SubmitButton, PasswordField, FileValidator
 
 from tgext.mailer import Message as message
 from tgext.mailer import get_mailer
@@ -83,6 +82,19 @@ class ImageField(FileField):
     '''
 
 
+class ImageValidator(FileValidator):
+    extension = ('png', 'jpeg', 'jpg')
+
+
+password_not_prefilled = {
+    'autocomplete': 'new-password',  # currentely works only with chrome
+    'readonly': '',
+    'onfocus': """if (this.hasAttribute('readonly')) {
+        this.removeAttribute('readonly');
+    }"""
+}
+
+
 class UserForm(ListForm):
     nothing = HiddenField()  # just to create children
     submit = SubmitButton(value=l_('Save'))
@@ -103,7 +115,7 @@ def create_user_form(user):
                 TextField(id=name, validator=Required, label=info[0]))
 
         profile_form.child.children.append(
-            PasswordField(id='password', label=u'New Password'))
+            PasswordField(id='password', label=u'New Password', attrs=password_not_prefilled))
         profile_form.child.children.append(
             PasswordField(id='verify_password', label=l_(u'Confirm New Password')))
         profile_form.child.validator = FieldsMatch('password', 'verify_password')

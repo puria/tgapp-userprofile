@@ -25,7 +25,7 @@ class RootController(TGController):
         user_data, user_avatar = get_user_data(user)
         user_displayname = user_data.pop('display_name', (None, 'Unknown'))
         user_partial = config['_pluggable_userprofile_config'].get('user_partial')
-        return dict(user=user,
+        return dict(user=user.profile_data,
                     user_data=user_data,
                     user_avatar=user_avatar,
                     user_displayname=user_displayname,
@@ -37,7 +37,7 @@ class RootController(TGController):
         user = request.identity['user']
         user_data, user_avatar = get_user_data(user)
         user_data = Bunch(((fieldid, info[1]) for fieldid, info in user_data.items()))
-        return dict(user=user_data, profile_css=get_profile_css(config),
+        return dict(user=user, profile_css=get_profile_css(config),
                     user_avatar=user_avatar,
                     form=create_user_form(user))
 
@@ -77,8 +77,7 @@ class RootController(TGController):
         profile_save(user, kw)
 
         if new_email != user.email_address:
-            # send confirmation email, but save modifications
-            # so now save this new email in the db
+            # save this new email in the db
             dictionary = {
                 'email_address': new_email,
                 'activation_code':
