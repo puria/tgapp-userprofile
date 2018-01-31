@@ -67,17 +67,23 @@ class ImageField(FileField):
     inline_engine_name = 'kajiki'
     template = '''
     <div py:strip="True">
-        <label for="${w.attrs['id']}">
-            <img src="${w.initial_src}" id="${w.attrs['id']}:image" class="userprofile_filefield"/>
-        </label>
-        <input style="display: none;" py:attrs="w.attrs"
-               onchange="filefieldPreview(event, '${w.attrs['id']}:image')" accept="image/*"/>
         <script>
             function filefieldPreview(event, id) {
                 var output = document.getElementById(id);
-                output.src = URL.createObjectURL(event.target.files[0]);
+                output.style.backgroundImage = "url('" + URL.createObjectURL(event.target.files[0]) + "')";
             }
         </script>
+        <div id="${w.attrs['id']}-imagefield">
+            <div id="${w.attrs['id']}-image" class="userprofile-imagefield-image"
+                 style="background-image:url('${w.initial_src}');">
+                <label for="${w.attrs['id']}">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    <span id="${w.attrs['id']}-edit-text">Edit</span>
+                </label>
+            </div>
+            <input style="display: none;" py:attrs="w.attrs"
+                   onchange="filefieldPreview(event, '${w.attrs['id']}-image')" accept="image/*"/>
+       </div>
     </div>
     '''
 
