@@ -4,12 +4,17 @@ About userprofile
 userprofile is a Pluggable application for TurboGears2 which provides a basic user
 profile page with forms to allow users to edit their own profile or change their password.
 
+This is a fork born to provide validation to the existing pluggable, but introduces
+breaking changes. the password is now on the same form, you can now set the avatar,
+your users must confirm their email if they change it.
+
+
 Installing
 ----------
 
-userprofile can be installed both from pypi or from bitbucket::
+userprofile can be installed both from pypi or from github::
 
-    easy_install tgapp-userprofile
+    pip install tgapp-userprofile-validated
 
 should just work for most of the users
 

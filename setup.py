@@ -20,14 +20,14 @@ except IOError:
     README = ''
 
 setup(
-    name='tgapp-userprofile',
-    version='0.2.0',
+    name='tgapp-userprofile-validated',
+    version='0.0.0',
     description='''Pluggable application for TurboGears2 which provides a basic user profile page with
 forms to allow users to edit their own profile or change their password''',
     long_description=README,
-    author='Mirko Darino, Alessandro Molina',
-    author_email='mirko.darino@axant.it, alessandro.molina@axant.it',
-    url='https://bitbucket.org/_amol_/tgapp-userprofile',
+    author='Mirko Darino, Alessandro Molina, Vincenzo Castiglia',
+    author_email='mirko.darino@axant.it, alessandro.molina@axant.it, vincenzo.castiglia@axant.it',
+    url='https://github.com/axant/tgapp-userprofile-validated',
     keywords='turbogears2.application',
     setup_requires=[],
     packages=find_packages(exclude=['ez_setup']),
