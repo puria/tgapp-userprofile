@@ -17,9 +17,8 @@ from datetime import datetime
 
 
 class RootController(TGController):
-    allow_only = predicates.not_anonymous()
-
     @expose('userprofile.templates.index')
+    @require(predicates.not_anonymous())
     def index(self):
         user = request.identity['user']
         user_data, user_avatar = get_user_data(user)
@@ -33,6 +32,7 @@ class RootController(TGController):
                     user_partial=user_partial)
 
     @expose('userprofile.templates.edit')
+    @require(predicates.not_anonymous())
     def edit(self):
         user = request.identity['user']
         user_data, user_avatar = get_user_data(user)
@@ -42,6 +42,7 @@ class RootController(TGController):
                     form=create_user_form(user))
 
     @expose()
+    @require(predicates.not_anonymous())
     def save(self, **kw):
         kw.pop('nothing')
         flash_message = _('Profile successfully updated')
@@ -106,7 +107,7 @@ class RootController(TGController):
     @expose()
     def activate(self, activation_code, **kw):
         activation = model.ProfileActivation.by_code(activation_code) or abort(404)
-        user = request.identity['user']
+        user = model.User.find({'email_address': activation.email_address}).first()
         user.email_address = activation.email_address
         activation.activated = datetime.utcnow()
         flash(_('email correctely updated'))
