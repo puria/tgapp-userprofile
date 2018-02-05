@@ -21,7 +21,7 @@ except IOError:
 
 setup(
     name='tgapp-userprofile-validated',
-    version='0.0.1',
+    version='0.0.2',
     description='Pluggable application for TurboGears2 which provides a basic user profile page with forms to allow users to edit their own profile or change their password',
     long_description=README,
     author='Mirko Darino, Alessandro Molina, Vincenzo Castiglia',
