@@ -66,11 +66,13 @@ class RootController(TGController):
             profile_save = update_user_data
 
         # do not change the password if the user did't set it
-        if not kw.get('password'):  # keep old email
-            kw.pop('password')
-            kw.pop('verify_password')
-        else:  # set new email
-            kw.pop('verify_password')
+
+        if 'password' in kw:
+            if not kw.get('password'):  # keep old email
+                kw.pop('password')
+                kw.pop('verify_password')
+            else:  # set new email
+                kw.pop('verify_password')
 
         # we don't want to save the email until it is confirmed
         new_email = kw['email_address']
