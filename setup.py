@@ -11,6 +11,7 @@ except ImportError:
 install_requires=[
     "TurboGears2 >= 2.3.0",
     "tgext.pluggable >= 0.6.1",
+    "tgapp-resetpassword",
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -21,11 +22,11 @@ except IOError:
 
 setup(
     name='tgapp-userprofile-validated',
-    version='0.0.2',
+    version='0.0.3',
     description='Pluggable application for TurboGears2 which provides a basic user profile page with forms to allow users to edit their own profile or change their password',
     long_description=README,
-    author='Mirko Darino, Alessandro Molina, Vincenzo Castiglia',
-    author_email='mirko.darino@axant.it, alessandro.molina@axant.it, vincenzo.castiglia@axant.it',
+    author='Mirko Darino, Alessandro Molina, Vincenzo Castiglia, Marco Bosio',
+    author_email='mirko.darino@axant.it, alessandro.molina@axant.it, vincenzo.castiglia@axant.it, marco.bosio@axant.it',
     url='https://github.com/axant/tgapp-userprofile-validated',
     keywords='turbogears2.application',
     setup_requires=[],

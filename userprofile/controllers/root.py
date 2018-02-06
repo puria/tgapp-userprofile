@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 """Main Controller"""
+from datetime import datetime
 
-from tg import TGController, expose, flash, require, url, predicates,\
-        lurl, request, redirect, validate, config, override_template, abort
-from tg.util import Bunch
+from resetpassword.lib import generate_token
+from tg import TGController, expose, flash, require, predicates, \
+    request, redirect, config, override_template, abort
 from tg.i18n import ugettext as _, lazy_ugettext as l_
-
+from tg.predicates import not_anonymous
+from tg.util import Bunch
+from tgext.pluggable import plug_url
 from tw2.core import ValidationError
 
-from tgext.pluggable import plug_url, primary_key
+from userprofile import model
 from userprofile.lib import create_user_form, get_user_data, get_profile_css, \
                             update_user_data, send_email
-from userprofile import model
-
-from datetime import datetime
 
 
 class RootController(TGController):
@@ -114,3 +114,10 @@ class RootController(TGController):
         activation.activated = datetime.utcnow()
         flash(_('email correctely updated'))
         return redirect(plug_url('userprofile', '/'))
+
+    @expose()
+    @require(not_anonymous(msg=l_("User must be authenticated")))
+    def reset_password(self, redirect_to='/'):
+        user = request.identity['user']
+        token = generate_token(user, redirect_to=redirect_to)
+        return redirect(plug_url('resetpassword', '/change_password/', params=dict(data=token)))
