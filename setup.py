@@ -10,7 +10,7 @@ except ImportError:
 
 install_requires=[
     "TurboGears2 >= 2.3.0",
-    "tgext.pluggable >= 0.6.1",
+    "tgext.pluggable>=0.7.2",
     "tgapp-resetpassword",
 ]
 
@@ -22,7 +22,7 @@ except IOError:
 
 setup(
     name='tgapp-userprofile-validated',
-    version='0.0.3',
+    version='0.0.4',
     description='Pluggable application for TurboGears2 which provides a basic user profile page with forms to allow users to edit their own profile or change their password',
     long_description=README,
     author='Mirko Darino, Alessandro Molina, Vincenzo Castiglia, Marco Bosio',
