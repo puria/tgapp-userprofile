@@ -14,7 +14,7 @@ Installing
 
 userprofile can be installed both from pypi or from github::
 
-    pip install tgapp-userprofile-validated
+    pip install tgapp-userprofile
 
 should just work for most of the users
 
