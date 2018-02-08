@@ -51,7 +51,7 @@ class RootController(TGController):
         # validate the form
         try:
             form = create_user_form(user)
-            form.validate(kw)
+            kw = form.validate(kw)
         except ValidationError:
             override_template(self.save, 'kajiki:userprofile.templates.edit')
             user_data, user_avatar = get_user_data(user)
