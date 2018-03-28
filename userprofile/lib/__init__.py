@@ -77,9 +77,11 @@ class ImageField(FileField):
             <div id="${w.attrs['id']}-image" class="userprofile-imagefield-image"
                  style="background-image:url('${w.initial_src}');">
                 <label for="${w.attrs['id']}">
-                    <span class="glyphicon glyphicon-pencil"></span>
-                    <span id="${w.attrs['id']}-edit-text">Edit</span>
+                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"> </span>
+                     <span id="${w.attrs['id']}-edit-text"> &nbsp; Edit</span>
+
                 </label>
+
             </div>
             <input style="display: none;" py:attrs="w.attrs"
                    onchange="filefieldPreview(event, '${w.attrs['id']}-image')" accept="image/*"/>
