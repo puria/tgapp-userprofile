@@ -18,6 +18,7 @@ class ProfileActivation(MappedClass):
     _id = FieldProperty(s.ObjectId)
     activated = FieldProperty(s.DateTime)
 
+    old_email_address = FieldProperty(s.String, required=True)
     email_address = FieldProperty(s.String, required=True)
 
     activation_code = FieldProperty(s.String, required=True, unique=True)

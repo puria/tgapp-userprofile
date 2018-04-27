@@ -8,7 +8,7 @@ from tg import TGController, expose, flash, require, predicates, \
 from tg.i18n import ugettext as _, lazy_ugettext as l_
 from tg.predicates import not_anonymous
 from tg.util import Bunch
-from tgext.pluggable import plug_url
+from tgext.pluggable import plug_url, app_model
 from tw2.core import ValidationError
 
 from userprofile import model
@@ -82,6 +82,7 @@ class RootController(TGController):
         if new_email != user.email_address:
             # save this new email in the db
             dictionary = {
+                'old_email_address': user.email_address,
                 'email_address': new_email,
                 'activation_code':
                     model.ProfileActivation.generate_activation_code(new_email),
@@ -109,7 +110,8 @@ class RootController(TGController):
     @expose()
     def activate(self, activation_code, **kw):
         activation = model.ProfileActivation.by_code(activation_code) or abort(404)
-        user = model.User.find({'email_address': activation.email_address}).first()
+        user = model.provider.get_obj(app_model.User,
+                                      {'email_address': activation.old_email_address})
         user.email_address = activation.email_address
         activation.activated = datetime.utcnow()
         flash(_('email correctely updated'))
