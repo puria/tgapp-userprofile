@@ -2,5 +2,7 @@
 *.swp
 *.egg-info
 dist/
+venv/
+venv3/
 .idea
 .DS_Store
