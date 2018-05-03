@@ -102,6 +102,15 @@ class FakeUser(bson.ObjectId):
     Fake user that emulates an users without the need to actually
     query it from the database
     """
+    def __init__(self):
+        self.__dict__['display_name'] = 'Example Manager'
+        self.__dict__['email_address'] = 'manager@somedomain.com'
+        self.__dict__['profile_data'] = {
+            'display_name': ('Display Name', self.display_name),
+            'email_address': ('Email Address', self.email_address),
+        }
+        self.__dict__['fbauth'] = None
+
     def __int__(self):
         return 1
 
@@ -110,7 +119,7 @@ class FakeUser(bson.ObjectId):
             return 1
         elif item == '_id':
             return self
-        return super(FakeUser, self).__getattr__(item)
+        return self.__dict__[item]
 
 
 class TestAuthMetadata(TGAuthMetadata):
@@ -155,7 +164,7 @@ def configure_app(using):
     elif using == 'ming':
         app_cfg.package.model = FakeMingModel()
         app_cfg.use_ming = True
-        app_cfg['ming.url'] = 'mim:///mailtemapltes'
+        app_cfg['ming.url'] = 'mim:///userprofile'
         app_cfg.MingSession = app_cfg.package.model.DBSession
     else:
         raise ValueError('Unsupported backend')
