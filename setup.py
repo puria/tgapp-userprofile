@@ -12,9 +12,9 @@ install_requires = [
     'TurboGears2 >= 2.3.0',
     'tgext.pluggable>=0.7.2',
     'tgapp-resetpassword',
+    'tgext.mailer',
 ]
 testpkgs = [
-    'tgext.mailer',
     'WebTest >= 1.2.3',
     'pyquery',
     'nose',

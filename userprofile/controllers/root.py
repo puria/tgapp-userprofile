@@ -24,7 +24,7 @@ class RootController(TGController):
         user_data, user_avatar = get_user_data(user)
         user_displayname = user_data.pop('display_name', (None, 'Unknown'))
         user_partial = config['_pluggable_userprofile_config'].get('user_partial')
-        return dict(user=user.profile_data,
+        return dict(user=user.profile_data if 'profile_data' in user else user,
                     user_data=user_data,
                     user_avatar=user_avatar,
                     user_displayname=user_displayname,

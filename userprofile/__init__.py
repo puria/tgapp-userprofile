@@ -14,4 +14,7 @@ def plugme(app_config, options):
     if 'resetpassword' not in plugged(config=app_config):
         plug(app_config, 'resetpassword')
 
+    if 'tgext.mailer' not in plugged(config=app_config):
+        plug(app_config, 'tgext.mailer')
+
     return dict(appid='userprofile', global_helpers=False)

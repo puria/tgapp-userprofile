@@ -37,6 +37,7 @@ class FakeAppPackage(object):
 
     class websetup(object):
         def bootstrap(*args, **kwargs):
+            # the code here never runs
             pass
 
 
@@ -80,6 +81,10 @@ class FakeMingModel(object):
             display_name = FieldProperty(s.String)
             password = FieldProperty(s.String)
 
+            @classmethod
+            def by_user_name(cls, user_name):
+                return cls.query.find({'user_name': user_name}).one()
+
         self.User = User
 
     def init_model(self, datastore):
@@ -102,20 +107,6 @@ class FakeUser(bson.ObjectId):
     Fake user that emulates an users without the need to actually
     query it from the database
     """
-    def __init__(self):
-        self.__dict__['display_name'] = 'Example Manager'
-        self.__dict__['email_address'] = 'manager@somedomain.com'
-        self.__dict__['profile_data'] = {
-            'display_name': ('Display Name', self.display_name),
-            'email_address': ('Email Address', self.email_address),
-        }
-        self.__dict__['profile_form'] = None
-        self.__dict__['nothing'] = None
-        self.__dict__['avatar'] = None
-        self.__dict__['password'] = None
-        self.__dict__['verify_password'] = None
-        self.__dict__['fbauth'] = None
-
     def __int__(self):
         return 1
 
@@ -124,7 +115,7 @@ class FakeUser(bson.ObjectId):
             return 1
         elif item == '_id':
             return self
-        return self.__dict__[item]
+        raise Exception('use a Fake model, instead of FakeUser')
 
 
 class TestAuthMetadata(TGAuthMetadata):
@@ -133,7 +124,8 @@ class TestAuthMetadata(TGAuthMetadata):
 
     def get_user(self, identity, userid):
         if userid:
-            return FakeUser()
+            return app_model.User.by_user_name(userid)
+            # return FakeUser()
 
     def get_groups(self, identity, userid):
         if userid:
@@ -181,6 +173,8 @@ def configure_app(using):
     # configurations of TGApps. Otherwise the validated
     # form would be different from the displayed one.
 
+    app_cfg['userprofile.email_sender'] = 'noreply@tg.2'
+
     plug(app_cfg, 'userprofile', plug_bootstrap=True)
     return app_cfg
 
@@ -198,5 +192,9 @@ def create_app(app_config, auth=False):
 
 
 def flush_db_changes():
-    app_model.DBSession.flush()
-    transaction.commit()
+    if 'flush_all' in dir(app_model.DBSession):  # ming
+        app_model.DBSession.flush_all()
+        app_model.DBSession.clear()
+    else:  # sqla
+        app_model.DBSession.flush()
+        transaction.commit()
