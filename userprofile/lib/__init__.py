@@ -111,6 +111,7 @@ class UserForm(ListForm):
 def create_user_form(user):
     profile_form = getattr(user, 'profile_form', None)
     if not profile_form:
+        from formencode.validators import FieldsMatch
         user_data, user_avatar = get_user_data(user)
         profile_form = UserForm()
         profile_form.child = profile_form.child()

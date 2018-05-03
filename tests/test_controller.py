@@ -20,6 +20,10 @@ class UserProfileControllerTests(object):
         r = self.app.get('/userprofile', extra_environ=self.env, status=200)
         assert 'Example Manager' in r.text, r.text
 
+    def test_edit(self):
+        r = self.app.get('/userprofile/edit', extra_environ=self.env, status=200)
+        assert 'Example Manager' == r.pyquery('input[name="display_name"]').val()
+
 
 # SQLAlchemy is currently not supported, when the support is added decomment this and all tests
 # should run even with sqlalchemy

@@ -109,6 +109,11 @@ class FakeUser(bson.ObjectId):
             'display_name': ('Display Name', self.display_name),
             'email_address': ('Email Address', self.email_address),
         }
+        self.__dict__['profile_form'] = None
+        self.__dict__['nothing'] = None
+        self.__dict__['avatar'] = None
+        self.__dict__['password'] = None
+        self.__dict__['verify_password'] = None
         self.__dict__['fbauth'] = None
 
     def __int__(self):
