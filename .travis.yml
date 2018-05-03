@@ -8,4 +8,4 @@ python:
 install:
     - pip install -e .[testing]
 script:
-- nosetests -v --tests=tests -d --with-coverage --cover-package=userprofile
+- nosetests
