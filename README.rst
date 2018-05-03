@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/axant/tgapp-userprofile.svg?branch=master
+   :target: https://travis-ci.org/axant/tgapp-userprofile
+
 About userprofile
 -----------------
 

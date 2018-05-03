@@ -4,5 +4,6 @@
 dist/
 venv/
 venv3/
+.coverage
 .idea
 .DS_Store
