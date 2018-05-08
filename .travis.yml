@@ -8,4 +8,4 @@ python:
 install:
     - pip install -e .[testing]
 script:
-- nosetests
+- nosetests -v
