@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Main Controller"""
 from datetime import datetime
+import sys
 
 from resetpassword.lib import generate_token
 from tg import TGController, expose, flash, require, predicates, \
@@ -55,7 +56,14 @@ class RootController(TGController):
         except ValidationError:
             override_template(self.save, 'kajiki:userprofile.templates.edit')
             user_data, user_avatar = get_user_data(user)
-            return dict(user={},
+            if sys.version_info >= (3, 3):
+                from types import SimpleNamespace
+            else:
+                from argparse import Namespace as SimpleNamespace
+            u = SimpleNamespace()
+            for k, v in kw.items():
+                u.__setattr__(k, v)
+            return dict(user=u,
                         profile_css=get_profile_css(config),
                         user_avatar=user_avatar,
                         form=form)
@@ -64,15 +72,6 @@ class RootController(TGController):
         profile_save = getattr(user, 'save_profile', None)
         if not profile_save:
             profile_save = update_user_data
-
-        # do not change the password if the user did't set it
-
-        if 'password' in kw:
-            if not kw.get('password'):  # keep old email
-                kw.pop('password')
-                kw.pop('verify_password')
-            else:  # set new email
-                kw.pop('verify_password')
 
         # we don't want to save the email until it is confirmed
         new_email = kw['email_address']

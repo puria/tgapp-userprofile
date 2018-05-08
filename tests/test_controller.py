@@ -1,5 +1,6 @@
 from .base import configure_app, create_app, flush_db_changes
 from tgext.pluggable import app_model
+from userprofile import model
 
 
 class UserProfileControllerTests(object):
@@ -47,6 +48,50 @@ class UserProfileControllerTests(object):
         assert u.display_name == 'Pippo Topoloso'
         assert u.user_name == 'pippo'
         assert u.email_address == 'pippo@tg.2'
+
+    def test_save_fail_so_test_validation(self):
+        r = self.app.get(
+            '/userprofile/save',
+            params={
+                'nothing': '',
+                'display_name': '',
+                'email_address': 'pippo@tg.2'
+            },
+            extra_environ={'REMOTE_USER': 'pippo'},
+            status=200,
+        )
+        assert r.pyquery('input[name="display_name"]').val() == ''
+        assert 'id="display_name:error"' in r.text
+
+    def test_change_email(self):
+        self.app.get(
+            '/userprofile/save',
+            params={
+                'nothing': '',
+                'email_address': 'pi@tg.2',
+                'display_name': 'Pi PPO'
+            },
+            extra_environ={'REMOTE_USER': 'pippo'},
+            status=302,
+        )
+        act = model.ProfileActivation.query.find().one()
+        assert act.old_email_address == 'pippo@tg.2'
+        assert act.email_address == 'pi@tg.2'
+        assert not act.activated
+        assert act.activation_code
+
+        self.app.get(
+            '/userprofile/activate',
+            params={
+                'activation_code': act.activation_code,
+            },
+            status=302,
+        )
+
+        act = model.ProfileActivation.query.find().one()
+        assert act.activated
+        u = app_model.User.query.find({'email_address': 'pi@tg.2'}).one()
+        assert u.display_name == 'Pi PPO'
 
 
 # SQLAlchemy is currently not supported, when the support is added decomment this and all tests

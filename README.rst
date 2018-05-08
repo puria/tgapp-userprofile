@@ -1,5 +1,8 @@
 .. image:: https://travis-ci.org/axant/tgapp-userprofile.svg?branch=master
    :target: https://travis-ci.org/axant/tgapp-userprofile
+.. image:: https://coveralls.io/repos/github/axant/tgapp-userprofile/badge.svg?branch=master
+   :target: https://coveralls.io/github/axant/tgapp-userprofile?branch=master
+
 
 About userprofile
 -----------------
