@@ -107,3 +107,78 @@ If you want use bootstrap for beautify style of `UserForm` or `ChangePasswordFor
         ChangePasswordForm.submit.css_class = 'btn-primary form-control'
 
     milestones.config_ready.register(replace_profile_form_layout)
+
+
+Authentication Configuration
+----------------------------
+Since with `userprofile` a user can change his email address or user name, you have to configure `repoze.who`
+properly.
+In `app_cfg.py`, locate the `authenticate` method of `ApplicationAuthMetadata`: it should return the id of the user.
+Now  `repoze.who` will save the user id in a cookie to identify the user and since this id will not change, the
+authentication process allows users to change email addresses and user names safely.
+
+This example illustrate a login based on user name or email address with Ming::
+
+   class ApplicationAuthMetadata(TGAuthMetadata):
+       def __init__(self, sa_auth):
+           self.sa_auth = sa_auth
+
+       def get_query(self, login):
+
+           try:
+               _id = ObjectId(login)
+           except InvalidId:
+               _id = login
+
+           return {
+               '$or': [{'email_address': login},
+                       {'user_name': login},
+                       {'_id': _id}],
+               'blocked': {'$ne': True},
+           }
+
+       def authenticate(self, environ, identity):
+           login = identity['login']
+           user = self.sa_auth.user_class.query.find(self.get_query(login)).first()
+
+           if not user:  # pragma: no cover
+               login = None
+           elif not user.validate_password(identity['password']):
+               login = None
+
+           if login is None:
+               try:
+                   from urllib.parse import parse_qs, urlencode
+               except ImportError:
+                   from urlparse import parse_qs
+                   from urllib import urlencode
+               from tg.exceptions import HTTPFound
+
+               params = parse_qs(environ['QUERY_STRING'])
+               params.pop('password', None)  # Remove password in case it was there
+               if user is None:  # pragma: no cover
+                   params['failure'] = 'user-not-found'
+               else:
+                   params['login'] = identity['login']
+                   params['failure'] = 'invalid-password'
+
+               # When authentication fails send user to login page.
+               environ['repoze.who.application'] = HTTPFound(
+                   location=environ['SCRIPT_NAME'] + '?'.join(('/login', urlencode(params, True)))
+               )
+
+           return str(user._id) if user else login
+
+       def get_user(self, identity, userid):
+           return self.sa_auth.user_class.query.find(self.get_query(userid)).first()
+
+       def get_groups(self, identity, userid):
+           return [g.group_name for g in identity['user'].groups]
+
+       def get_permissions(self, identity, userid):
+           return [p.permission_name for p in identity['user'].permissions]
+
+
+   base_config.sa_auth.authmetadata = ApplicationAuthMetadata(base_config.sa_auth)
+
+
