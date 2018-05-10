@@ -167,7 +167,7 @@ This example illustrate a login based on user name or email address with Ming::
                    location=environ['SCRIPT_NAME'] + '?'.join(('/login', urlencode(params, True)))
                )
 
-           return str(user._id) if user else login
+           return str(user._id) if user and login else login
 
        def get_user(self, identity, userid):
            return self.sa_auth.user_class.query.find(self.get_query(userid)).first()
