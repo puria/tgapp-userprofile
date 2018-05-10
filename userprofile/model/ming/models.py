@@ -33,7 +33,7 @@ class ProfileActivation(MappedClass):
     def generate_activation_code(cls, email):
         from hashlib import sha1
         import hmac
-        return hmac.new(str(email), str(datetime.now()), sha1).hexdigest()
+        return hmac.new(email.encode(), str(datetime.now()).encode(), sha1).hexdigest()
 
     @classmethod
     def by_code(cls, code):
