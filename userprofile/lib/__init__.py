@@ -65,12 +65,22 @@ def update_user_data(user, user_data):
 
 class ImageField(FileField):
     inline_engine_name = 'kajiki'
+    accept = 'image/*'  # browsers sometimes doesn't support fine control on accept attribute
+    accepted_mimetypes = 'image/png, image/jpeg, image/jpg'
+    not_accepted_message = l_(' is not accepted (accepted: ')
     template = '''
     <div py:strip="True">
         <script>
             function filefieldPreview(event, id) {
                 var output = document.getElementById(id);
-                output.style.backgroundImage = "url('" + URL.createObjectURL(event.target.files[0]) + "')";
+                if ('${w.accepted_mimetypes}'.indexOf(event.target.files[0].type) !== -1) {
+                    output.style.backgroundImage =
+                        "url('" + URL.createObjectURL(event.target.files[0]) + "')";
+                } else {
+                    alert(event.target.files[0].type +
+                        '${w.not_accepted_message}' + '${w.accepted_mimetypes})');
+                    event.preventDefault();  // so the input file is not changed
+                }
             }
         </script>
         <div id="${w.attrs['id']}-imagefield">
@@ -79,12 +89,11 @@ class ImageField(FileField):
                 <label for="${w.attrs['id']}">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"> </span>
                      <span id="${w.attrs['id']}-edit-text"> &nbsp; Edit</span>
-
                 </label>
-
             </div>
             <input style="display: none;" py:attrs="w.attrs"
-                   onchange="filefieldPreview(event, '${w.attrs['id']}-image')" accept="image/*"/>
+                   onchange="filefieldPreview(event, '${w.attrs['id']}-image')"
+                   accept="${w.accept}"/>
        </div>
     </div>
     '''
@@ -92,6 +101,10 @@ class ImageField(FileField):
 
 class ImageValidator(FileValidator):
     extension = ('png', 'jpeg', 'jpg')
+    msgs = {
+        'required': ('file_required', l_('Select an image')),
+        'badext': l_('File type not accepted. accepted: $extension'),
+    }
 
 
 password_not_prefilled = {
