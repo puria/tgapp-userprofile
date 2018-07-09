@@ -14,7 +14,7 @@ from tw2.core import ValidationError
 
 from userprofile import model
 from userprofile.lib import create_user_form, get_user_data, get_profile_css, \
-                            update_user_data, send_email
+                            update_user_data, send_email, get_profile_data
 
 
 class RootController(TGController):
@@ -25,7 +25,7 @@ class RootController(TGController):
         user_data, user_avatar = get_user_data(user)
         user_displayname = user_data.pop('display_name', (None, 'Unknown'))
         user_partial = config['_pluggable_userprofile_config'].get('user_partial')
-        return dict(user=user.profile_data if 'profile_data' in user else user,
+        return dict(user=get_profile_data(user, user),
                     user_data=user_data,
                     user_avatar=user_avatar,
                     user_displayname=user_displayname,
@@ -109,8 +109,7 @@ class RootController(TGController):
     @expose()
     def activate(self, activation_code, **kw):
         activation = model.ProfileActivation.by_code(activation_code) or abort(404)
-        user = model.provider.get_obj(app_model.User,
-                                      {'email_address': activation.old_email_address})
+        user = activation.get_user()
         user.email_address = activation.email_address
         activation.activated = datetime.utcnow()
         flash(_('email correctely updated'))

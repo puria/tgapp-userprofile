@@ -56,6 +56,11 @@ class FakeSQLAModel(object):
             display_name = Column(Unicode(255))
             password = Column(Unicode(255), nullable=False)
 
+            @classmethod
+            def by_user_name(cls, user_name):
+                from tg import config
+                return self.DBSession.query(cls).filter_by(user_name=user_name).first()
+
         self.User = User
 
     def init_model(self, engine):
@@ -125,7 +130,6 @@ class TestAuthMetadata(TGAuthMetadata):
     def get_user(self, identity, userid):
         if userid:
             return app_model.User.by_user_name(userid)
-            # return FakeUser()
 
     def get_groups(self, identity, userid):
         if userid:
@@ -147,18 +151,18 @@ def configure_app(using):
     app_cfg.use_dotted_templatenames = True
     app_cfg.package = FakeAppPackage()
     app_cfg.use_toscawidgets2 = True
-    app_cfg.sa_auth.authmetadata = TestAuthMetadata()
     app_cfg['beaker.session.secret'] = app_cfg['session.secret'] = 'SECRET'
-    app_cfg.auth_backend = 'ming'
     app_cfg['mail.debugmailer'] = "dummy"
 
     if using == 'sqlalchemy':
+        app_cfg.auth_backend = 'sqlalchemy'
         app_cfg.package.model = FakeSQLAModel()
         app_cfg.use_sqlalchemy = True
         app_cfg['sqlalchemy.url'] = 'sqlite://'
         app_cfg.use_transaction_manager = True
         app_cfg.SQLASession = app_cfg.package.model.DBSession
     elif using == 'ming':
+        app_cfg.auth_backend = 'ming'
         app_cfg.package.model = FakeMingModel()
         app_cfg.use_ming = True
         app_cfg['ming.url'] = 'mim:///userprofile'
@@ -168,6 +172,7 @@ def configure_app(using):
 
     app_cfg.model = app_cfg.package.model
     app_cfg.DBSession = app_cfg.package.model.DBSession
+    app_cfg.sa_auth.authmetadata = TestAuthMetadata()
 
     # Guarantee that the same form is used between multiple
     # configurations of TGApps. Otherwise the validated
@@ -191,10 +196,11 @@ def create_app(app_config, auth=False):
     return app
 
 
-def flush_db_changes():
+def flush_db_changes(add_all=None):
     if 'flush_all' in dir(app_model.DBSession):  # ming
         app_model.DBSession.flush_all()
         app_model.DBSession.clear()
     else:  # sqla
+        app_model.DBSession.add_all(add_all)
         app_model.DBSession.flush()
         transaction.commit()

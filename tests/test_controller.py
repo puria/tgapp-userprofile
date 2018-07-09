@@ -13,7 +13,8 @@ class UserProfileControllerTests(object):
         user.user_name = 'pippo'
         user.display_name = 'Pippo Plutonico'
         user.email_address = 'pippo@tg.2'
-        flush_db_changes()
+        user.password = 'bella'
+        flush_db_changes(add_all=[user])
 
     def test_app_index(self):
         # needed to know that the application starts without errors with this pluggable
@@ -44,7 +45,7 @@ class UserProfileControllerTests(object):
             status=302,
         )
         assert r.follow(status=200, extra_environ=self.env)
-        u = app_model.User.query.find().first()
+        u = app_model.User.by_user_name('pippo')
         assert u.display_name == 'Pippo Topoloso'
         assert u.user_name == 'pippo'
         assert u.email_address == 'pippo@tg.2'
@@ -74,7 +75,7 @@ class UserProfileControllerTests(object):
             extra_environ={'REMOTE_USER': 'pippo'},
             status=302,
         )
-        act = model.ProfileActivation.query.find().one()
+        act = model.provider.query(model.ProfileActivation)[1][0]
         assert act.old_email_address == 'pippo@tg.2'
         assert act.email_address == 'pi@tg.2'
         assert not act.activated
@@ -88,18 +89,16 @@ class UserProfileControllerTests(object):
             status=302,
         )
 
-        act = model.ProfileActivation.query.find().one()
+        act = model.provider.query(model.ProfileActivation)[1][0]
         assert act.activated
-        u = app_model.User.query.find({'email_address': 'pi@tg.2'}).one()
+        u = app_model.User.by_user_name('pippo')
         assert u.display_name == 'Pi PPO'
 
 
-# SQLAlchemy is currently not supported, when the support is added decomment this and all tests
-# should run even with sqlalchemy
-# class TestUserProfileControllerSQLA(UserProfileControllerTests):
-#     @classmethod
-#     def setupClass(cls):
-#         cls.app_config = configure_app('sqlalchemy')
+class TestUserProfileControllerSQLA(UserProfileControllerTests):
+    @classmethod
+    def setupClass(cls):
+        cls.app_config = configure_app('sqlalchemy')
 
 
 class TestUserProfileControllerMing(UserProfileControllerTests):

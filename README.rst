@@ -10,8 +10,7 @@ About userprofile
 userprofile is a Pluggable application for TurboGears2 which provides a basic user
 profile page with forms to allow users to edit their own profile or change their password or email.
 
-it's curretly only compatible with ming but sqlalchemy compatibility can be added simply by adding
-the model
+userprofile works with both *sqlachemy* and *ming* backends.
 
 Installing
 ----------

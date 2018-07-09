@@ -41,7 +41,7 @@ def _get_user_gravatar(email_address):
 
 
 def get_user_data(user):
-    user_data = getattr(user, 'profile_data', {
+    user_data = get_profile_data(user, {
         'display_name': (l_('Display Name'), user.display_name),
         'email_address': (l_('Email Address'), user.email_address),
     })
@@ -56,6 +56,14 @@ def get_user_data(user):
             user_avatar = _get_user_gravatar(user_data['email_address'][1])
 
     return user_data, user_avatar
+
+
+def get_profile_data(user, default):
+    # user is not iterable in sqlalchemy
+    try:
+        return user.profile_data
+    except AttributeError:
+        return default
 
 
 def update_user_data(user, user_data):
@@ -124,7 +132,6 @@ class UserForm(ListForm):
 def create_user_form(user):
     profile_form = getattr(user, 'profile_form', None)
     if not profile_form:
-        from formencode.validators import FieldsMatch
         user_data, user_avatar = get_user_data(user)
         profile_form = UserForm()
         profile_form.child = profile_form.child()
@@ -135,12 +142,6 @@ def create_user_form(user):
         for name, info in user_data.items():
             profile_form.child.children.append(
                 TextField(id=name, validator=Required, label=info[0]))
-
-        profile_form.child.children.append(
-            PasswordField(id='password', label=u'New Password', attrs=password_not_prefilled))
-        profile_form.child.children.append(
-            PasswordField(id='verify_password', label=l_(u'Confirm New Password')))
-        profile_form.child.validator = FieldsMatch('password', 'verify_password')
 
         profile_form = profile_form()
     return profile_form

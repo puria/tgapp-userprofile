@@ -3,7 +3,7 @@ from ming.odm import FieldProperty
 from ming.odm.declarative import MappedClass
 from datetime import datetime
 
-from userprofile.model import DBSession
+from userprofile.model import DBSession, provider
 from tgext.pluggable import app_model
 from tg import url
 from tg.decorators import cached_property
@@ -38,3 +38,6 @@ class ProfileActivation(MappedClass):
     @classmethod
     def by_code(cls, code):
         return cls.query.find({'activated': None, 'activation_code': code}).first()
+
+    def get_user(self):
+        return app_model.User.query.find({'email_address': self.old_email_address}).one()
