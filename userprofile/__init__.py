@@ -8,7 +8,13 @@ from userprofile import model
 
 
 def plugme(app_config, options):
-    app_config['_pluggable_userprofile_config'] = options
+    try:
+        app_config['_pluggable_userprofile_config'] = options
+    except TypeError:
+        app_config.update_blueprint({
+            '_pluggable_userprofile_config': options
+        })
+
     milestones.config_ready.register(model.configure_models)
 
     if 'resetpassword' not in plugged(config=app_config):
